@@ -19,12 +19,12 @@
         }
         .emoji-grid {
             display: grid;
-            grid-template-columns: repeat(4, 20vw); /* 4 columns for mobile */
+            grid-template-columns: repeat(10, 40px); /* 10x10 grid */
             gap: 5px;
             margin: 20px;
         }
         .emoji {
-            font-size: 8vw; /* Adjust size for mobile */
+            font-size: 40px;
             cursor: pointer;
             user-select: none;
             display: flex;
@@ -41,22 +41,23 @@
             color: #800080; /* Purple color for evil emojis */
         }
         #score {
-            font-size: 6vw; /* Adjust size for mobile */
-            color: #fff;
-            text-align: center;
-            margin-top: 10px;
-        }
-        #game-over {
-            display: none;
-            font-size: 8vw; /* Adjust size for mobile */
+            font-size: 24px;
             color: #fff;
             text-align: center;
             margin-top: 20px;
         }
-        #start-button {
+        #game-over {
+            display: none;
+            font-size: 32px;
+            color: #fff;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #restart-button {
+            display: none;
             background-color: #4CAF50; /* Green for the button */
             color: #fff;
-            font-size: 6vw; /* Adjust size for mobile */
+            font-size: 24px;
             border: none;
             padding: 10px 20px;
             margin-top: 20px;
@@ -66,18 +67,17 @@
 </head>
 <body>
     <div id="game-container">
-        <h1>Emoji Pop Game</h1>
-        <div id="emoji-grid"></div>
+        <div class="emoji-grid" id="emoji-grid"></div>
         <div id="score">Score: 0</div>
         <div id="game-over">Game Over</div>
-        <button id="start-button">Start</button>
+        <button id="restart-button" onclick="startGame()">Restart</button>
     </div>
 
     <script>
         const emojiGrid = document.getElementById('emoji-grid');
         const scoreDisplay = document.getElementById('score');
         const gameOverDisplay = document.getElementById('game-over');
-        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
         let score = 0;
         let evilCount = 0;
         let isGameActive = false;
@@ -88,7 +88,7 @@
             evilCount = 0;
             isGameActive = true;
             gameOverDisplay.style.display = 'none';
-            startButton.style.display = 'none';
+            restartButton.style.display = 'none';
             emojiGrid.innerHTML = '';
             updateScore();
             createEmojiGrid();
@@ -98,8 +98,7 @@
         function endGame() {
             isGameActive = false;
             gameOverDisplay.style.display = 'block';
-            startButton.style.display = 'block';
-            startButton.textContent = 'Restart';
+            restartButton.style.display = 'block';
         }
 
         // Function to update the score
@@ -136,18 +135,12 @@
                     }
                 }
             });
-
-            // Disable clicking on evil emojis
-            if (emojiType === 'evil') {
-                emoji.style.pointerEvents = 'none';
-            }
-
             return emoji;
         }
 
         // Function to create a grid of emojis
         function createEmojiGrid() {
-            for (let i = 0; i < 16; i++) { // Reduced for mobile screens
+            for (let i = 0; i < 100; i++) {
                 setTimeout(() => {
                     const emoji = createEmoji();
                     emojiGrid.appendChild(emoji);
@@ -160,17 +153,14 @@
                             emoji.textContent = '😈';
                             evilCount++;
 
-                            if (evilCount >= 20) { // Reduced for mobile screens
+                            if (evilCount >= 50) {
                                 endGame();
                             }
                         }
                     }, 2000 + Math.random() * 3000);
-                }, i * 500); // Adjusted for mobile screens
+                }, i * 100);
             }
         }
-
-        // Add click event to start button
-        startButton.addEventListener('click', startGame);
 
         // Start the game on page load
         startGame();
