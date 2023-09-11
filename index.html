@@ -19,12 +19,12 @@
         }
         .emoji-grid {
             display: grid;
-            grid-template-columns: repeat(5, 50px); /* 5x5 grid for mobile */
+            grid-template-columns: repeat(4, 20vw); /* 4 columns for mobile */
             gap: 5px;
             margin: 20px;
         }
         .emoji {
-            font-size: 40px;
+            font-size: 8vw; /* Adjust size for mobile */
             cursor: pointer;
             user-select: none;
             display: flex;
@@ -41,14 +41,14 @@
             color: #800080; /* Purple color for evil emojis */
         }
         #score {
-            font-size: 24px;
+            font-size: 6vw; /* Adjust size for mobile */
             color: #fff;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         #game-over {
             display: none;
-            font-size: 32px;
+            font-size: 8vw; /* Adjust size for mobile */
             color: #fff;
             text-align: center;
             margin-top: 20px;
@@ -56,7 +56,7 @@
         #start-button {
             background-color: #4CAF50; /* Green for the button */
             color: #fff;
-            font-size: 24px;
+            font-size: 6vw; /* Adjust size for mobile */
             border: none;
             padding: 10px 20px;
             margin-top: 20px;
@@ -67,10 +67,10 @@
 <body>
     <div id="game-container">
         <h1>Emoji Pop Game</h1>
-        <button id="start-button" onclick="startGame()">Start</button>
-        <div class="emoji-grid" id="emoji-grid"></div>
+        <div id="emoji-grid"></div>
         <div id="score">Score: 0</div>
         <div id="game-over">Game Over</div>
+        <button id="start-button">Start</button>
     </div>
 
     <script>
@@ -87,8 +87,8 @@
             score = 0;
             evilCount = 0;
             isGameActive = true;
-            startButton.style.display = 'none';
             gameOverDisplay.style.display = 'none';
+            startButton.style.display = 'none';
             emojiGrid.innerHTML = '';
             updateScore();
             createEmojiGrid();
@@ -97,8 +97,9 @@
         // Function to end the game
         function endGame() {
             isGameActive = false;
-            startButton.style.display = 'block';
             gameOverDisplay.style.display = 'block';
+            startButton.style.display = 'block';
+            startButton.textContent = 'Restart';
         }
 
         // Function to update the score
@@ -146,7 +147,7 @@
 
         // Function to create a grid of emojis
         function createEmojiGrid() {
-            for (let i = 0; i < 25; i++) { // Reduced to 5x5 grid for mobile
+            for (let i = 0; i < 16; i++) { // Reduced for mobile screens
                 setTimeout(() => {
                     const emoji = createEmoji();
                     emojiGrid.appendChild(emoji);
@@ -159,14 +160,17 @@
                             emoji.textContent = '😈';
                             evilCount++;
 
-                            if (evilCount >= 50) {
+                            if (evilCount >= 20) { // Reduced for mobile screens
                                 endGame();
                             }
                         }
                     }, 2000 + Math.random() * 3000);
-                }, i * 100);
+                }, i * 500); // Adjusted for mobile screens
             }
         }
+
+        // Add click event to start button
+        startButton.addEventListener('click', startGame);
 
         // Start the game on page load
         startGame();
