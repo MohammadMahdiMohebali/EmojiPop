@@ -5,72 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emoji Pop Game</title>
     <style>
+        /* Global Styles */
         body {
             margin: 0;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #87CEEB; /* Light Blue for the sky */
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #87CEEB;
         }
-        #game-container {
+
+        /* Styles for game menu */
+        #game-menu {
             text-align: center;
+            padding: 5%;
         }
+
+        #game-menu button {
+            background-color: #4CAF50;
+            color: #fff;
+            font-size: 3vw; /* Adjust button font size relative to viewport width */
+            border: none;
+            padding: 2% 4%; /* Adjust button padding relative to viewport width */
+            margin: 2%;
+            cursor: pointer;
+        }
+
+        /* Styles for game container */
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+        }
+
         .emoji-grid {
             display: grid;
-            grid-template-columns: repeat(10, 40px); /* 10x10 grid */
-            gap: 5px;
-            margin: 20px;
+            grid-template-columns: repeat(5, 1fr); /* Equal-width columns with space between emojis */
+            gap: 1%;
+            max-width: 80%; /* Limit maximum width */
+            margin: 0 auto;
         }
-        .emoji {
-            font-size: 40px;
+
+        /* Styles for game over screen */
+        #game-over {
+            display: none;
+            font-size: 5vw; /* Adjust font size relative to viewport width */
+            color: #fff;
+            text-align: center;
+            margin-top: 5%; /* Adjust margin relative to viewport height */
+        }
+
+        /* Styles for restart button */
+        #restart-button {
+            background-color: #4CAF50;
+            color: #fff;
+            font-size: 3vw; /* Adjust button font size relative to viewport width */
+            border: none;
+            padding: 2% 4%; /* Adjust button padding relative to viewport width */
+            margin-top: 5%; /* Adjust margin relative to viewport height */
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Styles for score */
+        #score {
+            font-size: 4vw; /* Adjust font size relative to viewport width */
+            color: #fff;
+            text-align: center;
+            margin-top: 5%; /* Adjust margin relative to viewport height */
+        }
+
+        /* Add your emoji styles here */
+        .emoji-cell {
+            background-color: transparent;
+            font-size: 8vw; /* Adjust emoji size relative to viewport width */
             cursor: pointer;
             user-select: none;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .happy {
             color: #FFD700; /* Gold color for happy emojis */
         }
+
         .angry {
             color: #FF0000; /* Red color for angry emojis */
         }
+
         .evil {
             color: #800080; /* Purple color for evil emojis */
         }
-        #score {
-            font-size: 24px;
-            color: #fff;
-            text-align: center;
-            margin-top: 20px;
+
+        .correct {
+            background-color: green;
+            transition: background-color 0.5s ease;
         }
-        #game-over {
-            display: none;
-            font-size: 32px;
-            color: #fff;
-            text-align: center;
-            margin-top: 20px;
+
+        .wrong {
+            background-color: red;
+            transition: background-color 0.5s ease;
         }
-        #restart-button {
+
+        /* Styles for "How to Play" section */
+        #how-to-play {
             display: none;
-            background-color: #4CAF50; /* Green for the button */
+            padding: 5%;
+            font-size: 3vw; /* Adjust font size relative to viewport width */
             color: #fff;
-            font-size: 24px;
+        }
+
+        #how-to-play p {
+            text-align: left;
+        }
+
+        /* Button to toggle "How to Play" */
+        #how-to-play-button {
+            background-color: #4CAF50;
+            color: #fff;
+            font-size: 3vw; /* Adjust button font size relative to viewport width */
             border: none;
-            padding: 10px 20px;
-            margin-top: 20px;
+            padding: 2% 4%; /* Adjust button padding relative to viewport width */
+            margin: 2%;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
+    <!-- Game menu -->
+    <div id="game-menu">
+        <h1>Welcome to Emoji Pop Game</h1>
+        <button id="start-button">Start Game</button>
+        <button id="how-to-play-button">How to Play</button>
+    </div>
+
+    <!-- "How to Play" section -->
+    <div id="how-to-play">
+        <h2>How to Play</h2>
+        <p>Click on happy emojis (😃) to score points.</p>
+        <p>Clicking on a happy emoji (😃) deducts 1 point and may turn it into an angry emoji (😠).</p>
+        <p>Clicking on an angry emoji (😠) adds 1 point and turns it back into a happy emoji (😃).</p>
+        <p>Some angry emojis (😠) may randomly turn into evil emojis (😈).</p>
+        <p>Clicking on an evil emoji (😈) turns it back into a happy emoji (😃) but does not earn any points.</p>
+        <p>The game is endless but ends when you accumulate 8 evil emojis.</p>
+        <button id="close-instructions-button">Close</button>
+    </div>
+
+    <!-- Game container -->
     <div id="game-container">
-        <div class="emoji-grid" id="emoji-grid"></div>
         <div id="score">Score: 0</div>
+        <div class="emoji-grid" id="emoji-grid"></div>
+        <button id="restart-button">Restart</button>
         <div id="game-over">Game Over</div>
-        <button id="restart-button" onclick="startGame()">Restart</button>
     </div>
 
     <script>
@@ -78,6 +165,10 @@
         const scoreDisplay = document.getElementById('score');
         const gameOverDisplay = document.getElementById('game-over');
         const restartButton = document.getElementById('restart-button');
+        const startButton = document.getElementById('start-button');
+        const howToPlayButton = document.getElementById('how-to-play-button');
+        const howToPlaySection = document.getElementById('how-to-play');
+        const closeInstructionsButton = document.getElementById('close-instructions-button');
         let score = 0;
         let evilCount = 0;
         let isGameActive = false;
@@ -111,59 +202,130 @@
             const emojiTypes = ['happy', 'angry', 'evil'];
             const emojiType = emojiTypes[Math.floor(Math.random() * emojiTypes.length)];
             const emoji = document.createElement('div');
-            emoji.classList.add('emoji', emojiType);
-            emoji.textContent = emojiType === 'happy' ? '😃' : (emojiType === 'angry' ? '😠' : '😈');
-            emoji.addEventListener('click', () => {
-                if (isGameActive) {
-                    if (emojiType === 'angry') {
-                        score++;
+            emoji.classList.add('emoji-cell', emojiType);
+
+            if (emojiType === 'happy') {
+                emoji.textContent = '😃';
+                emoji.addEventListener('click', () => {
+                    if (isGameActive) {
+                        if (emoji.classList.contains('angry')) {
+                            score--;
+                            emoji.classList.remove('angry');
+                            emoji.classList.add('happy', 'correct');
+                            emoji.textContent = '😃';
+                            setTimeout(() => {
+                                emoji.classList.remove('correct');
+                            }, 500);
+                        } else if (emoji.classList.contains('happy')) {
+                            emoji.classList.remove('happy');
+                            emoji.classList.add('angry', 'correct');
+                            emoji.textContent = '😠';
+                            setTimeout(() => {
+                                emoji.classList.remove('correct');
+                            }, 500);
+                        } else if (emoji.classList.contains('evil')) {
+                            emoji.classList.remove('evil');
+                            emoji.classList.add('happy', 'correct');
+                            emoji.textContent = '😃';
+                            setTimeout(() => {
+                                emoji.classList.remove('correct');
+                            }, 500);
+                        }
                         updateScore();
-                        emoji.classList.remove('angry');
-                        emoji.classList.add('happy');
-                        emoji.textContent = '😃';
-                    } else if (emojiType === 'evil') {
-                        // No scoring for evil emojis
-                        emoji.classList.remove('evil');
-                        emoji.classList.add('happy');
-                        emoji.textContent = '😃';
-                    } else {
-                        score--;
-                        updateScore();
-                        emoji.classList.remove('happy');
-                        emoji.classList.add('angry');
-                        emoji.textContent = '😠';
                     }
-                }
-            });
+                });
+            } else if (emojiType === 'angry') {
+                emoji.textContent = '😠';
+                emoji.addEventListener('click', () => {
+                    if (isGameActive) {
+                        score++;
+                        emoji.classList.remove('angry');
+                        emoji.classList.add('happy', 'correct');
+                        emoji.textContent = '😃';
+                        setTimeout(() => {
+                            emoji.classList.remove('correct');
+                        }, 500);
+                        updateScore();
+                    }
+                });
+            } else { // emojiType === 'evil'
+                emoji.textContent = '😈';
+                emoji.addEventListener('click', () => {
+                    if (isGameActive) {
+                        emoji.classList.remove('evil');
+                        emoji.classList.add('happy', 'correct');
+                        emoji.textContent = '😃';
+                        setTimeout(() => {
+                            emoji.classList.remove('correct');
+                        }, 500);
+                    }
+                });
+            }
+
             return emoji;
         }
 
         // Function to create a grid of emojis
         function createEmojiGrid() {
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    const emoji = createEmoji();
-                    emojiGrid.appendChild(emoji);
+            const numRows = 5; // Number of rows
+            const numColumns = 5; // Number of columns
 
-                    // After a delay, turn the emoji into an evil one
+            for (let row = 0; row < numRows; row++) {
+                for (let col = 0; col < numColumns; col++) {
                     setTimeout(() => {
-                        if (isGameActive) {
-                            emoji.classList.remove('angry', 'happy');
-                            emoji.classList.add('evil');
-                            emoji.textContent = '😈';
-                            evilCount++;
+                        const emoji = createEmoji();
+                        emojiGrid.appendChild(emoji);
 
-                            if (evilCount >= 50) {
-                                endGame();
+                        // After a delay, turn the emoji into an angry one
+                        setTimeout(() => {
+                            if (isGameActive && emoji.classList.contains('happy')) {
+                                emoji.classList.remove('happy');
+                                emoji.classList.add('angry', 'correct');
+                                emoji.textContent = '😠';
+
+                                // After another delay, turn the angry emoji into an evil one
+                                setTimeout(() => {
+                                    if (isGameActive && emoji.classList.contains('angry')) {
+                                        emoji.classList.remove('angry');
+                                        emoji.classList.add('evil', 'correct');
+                                        emoji.textContent = '😈';
+                                        evilCount++;
+
+                                        if (evilCount >= 8) {
+                                            endGame();
+                                        }
+                                    }
+                                }, 2000 + Math.random() * 3000);
                             }
-                        }
-                    }, 2000 + Math.random() * 3000);
-                }, i * 100);
+                        }, 2000 + Math.random() * 3000);
+                    }, (row * numColumns + col) * 100); // Adjust the timeout delay
+                }
             }
         }
 
-        // Start the game on page load
-        startGame();
+        // Show the "How to Play" section when the button is clicked
+        howToPlayButton.addEventListener('click', () => {
+            howToPlaySection.style.display = 'block';
+        });
+
+        // Close the "How to Play" section when the close button is clicked
+        closeInstructionsButton.addEventListener('click', () => {
+            howToPlaySection.style.display = 'none';
+        });
+
+        // Start the game when the "Start Game" button is clicked
+        startButton.addEventListener('click', () => {
+            document.getElementById('game-menu').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex'; // Display as flex to center the grid
+            startGame();
+        });
+
+        // Restart the game when the "Restart" button is clicked
+        restartButton.addEventListener('click', () => {
+            document.getElementById('game-menu').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex'; // Display as flex to center the grid
+            startGame();
+        });
     </script>
 </body>
 </html>
