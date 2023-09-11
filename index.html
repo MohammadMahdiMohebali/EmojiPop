@@ -19,7 +19,7 @@
         }
         .emoji-grid {
             display: grid;
-            grid-template-columns: repeat(10, 40px); /* 10x10 grid */
+            grid-template-columns: repeat(5, 50px); /* 5x5 grid for mobile */
             gap: 5px;
             margin: 20px;
         }
@@ -53,8 +53,7 @@
             text-align: center;
             margin-top: 20px;
         }
-        #restart-button {
-            display: none;
+        #start-button {
             background-color: #4CAF50; /* Green for the button */
             color: #fff;
             font-size: 24px;
@@ -67,17 +66,18 @@
 </head>
 <body>
     <div id="game-container">
+        <h1>Emoji Pop Game</h1>
+        <button id="start-button" onclick="startGame()">Start</button>
         <div class="emoji-grid" id="emoji-grid"></div>
         <div id="score">Score: 0</div>
         <div id="game-over">Game Over</div>
-        <button id="restart-button" onclick="startGame()">Restart</button>
     </div>
 
     <script>
         const emojiGrid = document.getElementById('emoji-grid');
         const scoreDisplay = document.getElementById('score');
         const gameOverDisplay = document.getElementById('game-over');
-        const restartButton = document.getElementById('restart-button');
+        const startButton = document.getElementById('start-button');
         let score = 0;
         let evilCount = 0;
         let isGameActive = false;
@@ -87,8 +87,8 @@
             score = 0;
             evilCount = 0;
             isGameActive = true;
+            startButton.style.display = 'none';
             gameOverDisplay.style.display = 'none';
-            restartButton.style.display = 'none';
             emojiGrid.innerHTML = '';
             updateScore();
             createEmojiGrid();
@@ -97,8 +97,8 @@
         // Function to end the game
         function endGame() {
             isGameActive = false;
+            startButton.style.display = 'block';
             gameOverDisplay.style.display = 'block';
-            restartButton.style.display = 'block';
         }
 
         // Function to update the score
@@ -135,12 +135,18 @@
                     }
                 }
             });
+
+            // Disable clicking on evil emojis
+            if (emojiType === 'evil') {
+                emoji.style.pointerEvents = 'none';
+            }
+
             return emoji;
         }
 
         // Function to create a grid of emojis
         function createEmojiGrid() {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 25; i++) { // Reduced to 5x5 grid for mobile
                 setTimeout(() => {
                     const emoji = createEmoji();
                     emojiGrid.appendChild(emoji);
