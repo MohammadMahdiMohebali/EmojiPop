@@ -8,24 +8,29 @@
 </head>
 <body>
     <div class="game-container">
-        <h1>Emoji Pop Game</h1>
-        <button id="dark-mode-button">Dark Mode</button>
-        <p>Score: <span id="score">0</span></p>
+        <h1 class="title">Emoji Pop Game</h1>
+        <div class="button-container">
+            <button id="dark-mode-button">Dark Mode</button>
+            <button id="how-to-play-button">How to Play</button>
+        </div>
+        <div class="score-container">
+            <p class="score">Score: <span id="score">0</span></p>
+        </div>
         <div id="emoji-grid"></div>
         <div class="game-menu">
             <button id="start-button">Start Game</button>
-            <button id="how-to-play-button">How to Play</button>
-            <button id="restart-button">Restart</button>
+            <button id="stop-button">Stop Game</button>
+            <button id="restart-button" style="display: none;">Restart</button>
         </div>
     </div>
     <div id="how-to-play-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>How to Play</h2>
-            <p>Click happy emojis (😃) to lose 1 point and turn them into angry emojis (😠).</p>
-            <p>Click angry emojis (😠) to score 1 point and turn them back into happy emojis (😃).</p>
-            <p>Click evil emojis (😈) to turn them back into happy emojis, but you don't score any points.</p>
-            <p>Your goal is to keep the number of evil emojis below 3.</p>
+            <h2 class="modal-title">How to Play</h2>
+            <p class="modal-text">Click happy emojis (😃) to lose 1 point and turn them into angry emojis (😠).</p>
+            <p class="modal-text">Click angry emojis (😠) to score 1 point and turn them back into happy emojis (😃).</p>
+            <p class="modal-text">Click evil emojis (😈) to turn them back into happy emojis, but you don't score any points.</p>
+            <p class="modal-text">Your goal is to keep the number of evil emojis below 3.</p>
         </div>
     </div>
     <script src="script.js"></script>
