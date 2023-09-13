@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
         evilEmojis = 0;
         scoreElement.textContent = score;
         emojiGrid.innerHTML = "";
-        gameInterval = setInterval(generateEmoji, 300);
+        gameInterval = setInterval(generateEmoji, 100);
         startButton.disabled = true;
         howToPlayButton.disabled = true;
         restartButton.style.display = "none";
