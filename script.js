@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("start-button");
     const howToPlayButton = document.getElementById("how-to-play-button");
     const restartButton = document.getElementById("restart-button");
+    const stopButton = document.getElementById("stop-button"); // Add the stop button
     const howToPlayModal = document.getElementById("how-to-play-modal");
     const darkModeButton = document.getElementById("dark-mode-button");
     const body = document.body;
@@ -55,12 +56,26 @@ document.addEventListener("DOMContentLoaded", function () {
         startButton.disabled = true;
         howToPlayButton.disabled = true;
         restartButton.style.display = "none";
+        stopButton.style.display = "block"; // Show the stop button when the game starts
     }
 
-    function endGame() {
+    function stopGame() {
         clearInterval(gameInterval);
-        emojiGrid.innerHTML = `<p>Game Over</p>`;
+        emojiGrid.innerHTML = `<p>Game Stopped</p>`;
         restartButton.style.display = "block";
+        stopButton.style.display = "none"; // Hide the stop button when the game is stopped
+    }
+
+    function resetGame() {
+        clearInterval(gameInterval);
+        score = 0;
+        evilEmojis = 0;
+        scoreElement.textContent = score;
+        emojiGrid.innerHTML = "";
+        startButton.disabled = false;
+        howToPlayButton.disabled = false;
+        restartButton.style.display = "none";
+        stopButton.style.display = "none"; // Hide the stop button on reset
     }
 
     function toggleDarkMode() {
@@ -68,7 +83,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     startButton.addEventListener("click", startGame);
-    restartButton.addEventListener("click", startGame);
+    restartButton.addEventListener("click", resetGame);
+    stopButton.addEventListener("click", stopGame); // Add event listener for the stop button
     howToPlayButton.addEventListener("click", () => {
         howToPlayModal.style.display = "block";
     });
