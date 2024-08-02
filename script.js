@@ -32,8 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     emojiElement.innerText = "😃";
                 }
                 scoreElement.textContent = score;
-                emojiGrid.removeChild(emojiElement);
-                if (emojiElement.innerText === "😈") {
+                if (emojiElement.innerText !== "😃") {
+                    emojiGrid.removeChild(emojiElement);
+                }
+                if (emoji === "😈") {
                     evilEmojis--;
                 }
                 if (evilEmojis >= 3) {
