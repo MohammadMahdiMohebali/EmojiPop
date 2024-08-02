@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const startButton = document.getElementById("start-button");
     const howToPlayButton = document.getElementById("how-to-play-button");
     const restartButton = document.getElementById("restart-button");
-    const stopButton = document.getElementById("stop-button"); // Add the stop button
+    const stopButton = document.getElementById("stop-button");
     const howToPlayModal = document.getElementById("how-to-play-modal");
     const darkModeButton = document.getElementById("dark-mode-button");
     const body = document.body;
@@ -22,18 +22,18 @@ document.addEventListener("DOMContentLoaded", function () {
             emojiElement.classList.add("emoji");
             emojiElement.innerText = emoji;
             emojiElement.addEventListener("click", () => {
-                if (emoji === "😃") {
+                if (emojiElement.innerText === "😃") {
                     score--;
                     emojiElement.innerText = "😠";
-                } else if (emoji === "😠") {
+                } else if (emojiElement.innerText === "😠") {
                     score++;
                     emojiElement.innerText = "😃";
-                } else if (emoji === "😈") {
+                } else if (emojiElement.innerText === "😈") {
                     emojiElement.innerText = "😃";
                 }
                 scoreElement.textContent = score;
                 emojiGrid.removeChild(emojiElement);
-                if (emoji === "😈") {
+                if (emojiElement.innerText === "😈") {
                     evilEmojis--;
                 }
                 if (evilEmojis >= 3) {
@@ -56,14 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
         startButton.disabled = true;
         howToPlayButton.disabled = true;
         restartButton.style.display = "none";
-        stopButton.style.display = "block"; // Show the stop button when the game starts
+        stopButton.style.display = "block";
     }
 
     function stopGame() {
         clearInterval(gameInterval);
         emojiGrid.innerHTML = `<p>Game Stopped</p>`;
         restartButton.style.display = "block";
-        stopButton.style.display = "none"; // Hide the stop button when the game is stopped
+        stopButton.style.display = "none";
     }
 
     function resetGame() {
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
         startButton.disabled = false;
         howToPlayButton.disabled = false;
         restartButton.style.display = "none";
-        stopButton.style.display = "none"; // Hide the stop button on reset
+        stopButton.style.display = "none";
     }
 
     function toggleDarkMode() {
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     startButton.addEventListener("click", startGame);
     restartButton.addEventListener("click", resetGame);
-    stopButton.addEventListener("click", stopGame); // Add event listener for the stop button
+    stopButton.addEventListener("click", stopGame);
     howToPlayButton.addEventListener("click", () => {
         howToPlayModal.style.display = "block";
     });
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
     darkModeButton.addEventListener("click", toggleDarkMode);
 
     window.addEventListener("click", (event) => {
-        if (event.target == howToPlayModal) {
+        if (event.target === howToPlayModal) {
             howToPlayModal.style.display = "none";
         }
     });
