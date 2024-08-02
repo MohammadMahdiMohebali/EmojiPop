@@ -21,7 +21,6 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Add these dark mode styles */
 .dark-mode .game-container {
     background-color: #111;
     color: #f0f0f0;
@@ -55,7 +54,7 @@ button {
     gap: 10px;
     margin-top: 20px;
     justify-content: center;
-    max-height: 500px; /* Limit the number of emojis on the screen */
+    max-height: 500px;
     overflow: auto;
 }
 
@@ -102,5 +101,13 @@ button {
 @media screen and (max-width: 600px) {
     .game-container {
         padding: 10px;
+    }
+
+    #emoji-grid {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    }
+
+    .emoji {
+        font-size: 24px;
     }
 }
