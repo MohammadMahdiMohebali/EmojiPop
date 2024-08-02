@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (evilEmojis >= 3) {
                     endGame();
                 } else {
-                    checkGameCompletion();
+                    setTimeout(checkGameCompletion, 0);
                 }
             });
             emojiGrid.appendChild(emojiElement);
