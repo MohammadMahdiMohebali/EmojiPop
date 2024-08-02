@@ -38,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 if (evilEmojis >= 3) {
                     endGame();
+                } else {
+                    checkGameCompletion();
                 }
             });
             emojiGrid.appendChild(emojiElement);
@@ -80,6 +82,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function toggleDarkMode() {
         body.classList.toggle("dark-mode");
+    }
+
+    function checkGameCompletion() {
+        const remainingEmojis = Array.from(emojiGrid.children);
+        const hasAngryOrEvil = remainingEmojis.some(
+            emoji => emoji.innerText === "😠" || emoji.innerText === "😈"
+        );
+        if (!hasAngryOrEvil) {
+            endGame();
+        }
+    }
+
+    function endGame() {
+        clearInterval(gameInterval);
+        alert(`Game Over! Your final score is ${score}.`);
+        resetGame();
     }
 
     startButton.addEventListener("click", startGame);
