@@ -4,7 +4,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emoji Pop Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General styling */
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            text-align: center;
+            background-color: #f7f7f7;
+            color: #333;
+            margin: 0;
+            transition: background-color 0.5s, color 0.5s;
+        }
+/* Dark Mode styles */
+.dark-mode body {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+.dark-mode .game-container {
+    background-color: #111;
+    color: #f0f0f0;
+    border-color: #444;
+}
+
+.dark-mode button {
+    background-color: #222;
+    color: #f0f0f0;
+    border: 1px solid #444;
+}
+
+.dark-mode button:hover {
+    background-color: #333;
+    border-color: #555;
+}
+
+/* Dark Mode for How to Play Modal */
+.dark-mode .modal-content {
+    background-color: #222;
+    color: #f0f0f0;
+}
+
+.dark-mode .close {
+    color: #f0f0f0;
+}
+
+        /* Dark Mode */
+        .dark-mode {
+            background-color: #2b2b2b;
+            color: #f7f7f7;
+        }
+
+        .dark-mode button {
+            background-color: #444;
+            color: #f7f7f7;
+        }
+
+        .dark-mode .game-container {
+            background-color: #3a3a3a;
+            border-color: #555;
+        }
+
+        /* Game container */
+        .game-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border: 2px solid #ccc;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .button-container, .game-menu {
+            margin-bottom: 20px;
+        }
+
+        /* Buttons */
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 10px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 15px;
+            justify-items: center;
+            max-height: 400px;
+            overflow: auto;
+            padding: 10px;
+        }
+
+        .emoji {
+            font-size: 40px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .emoji:hover {
+            transform: scale(1.2);
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+            text-align: left;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            .game-container {
+                padding: 10px;
+            }
+
+            .emoji {
+                font-size: 32px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
@@ -22,7 +179,12 @@
             <button id="stop-button" style="display: none;">Stop Game</button>
             <button id="restart-button" style="display: none;">Restart</button>
         </div>
+        <div id="share-score" style="display: none;">
+            <button id="share-button">Share Your Score</button>
+        </div>
     </div>
+    
+    <!-- Modal for How to Play -->
     <div id="how-to-play-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -33,6 +195,134 @@
             <p class="modal-text">Your goal is to keep the number of evil emojis below 3.</p>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const emojiGrid = document.getElementById("emoji-grid");
+            const scoreElement = document.getElementById("score");
+            const startButton = document.getElementById("start-button");
+            const restartButton = document.getElementById("restart-button");
+            const stopButton = document.getElementById("stop-button");
+            const howToPlayModal = document.getElementById("how-to-play-modal");
+            const darkModeButton = document.getElementById("dark-mode-button");
+            const shareButton = document.getElementById("share-button");
+            const body = document.body;
+
+            let score = 0;
+            let evilEmojis = 0;
+            let gameInterval;
+
+            function generateEmoji() {
+                const emojis = ["😃", "😃", "😃", "😃", "😃", "😠", "😠", "😠", "😠", "😈"];
+                const randomIndex = Math.floor(Math.random() * emojis.length);
+                const emoji = emojis[randomIndex];
+
+                if (emojiGrid.childElementCount < 30) {
+                    const emojiElement = document.createElement("div");
+                    emojiElement.classList.add("emoji");
+                    emojiElement.innerText = emoji;
+                    emojiElement.addEventListener("click", () => handleEmojiClick(emojiElement));
+                    emojiGrid.appendChild(emojiElement);
+                    if (emoji === "😈") {
+                        evilEmojis++;
+                    }
+                }
+            }
+
+            function handleEmojiClick(emojiElement) {
+                const emoji = emojiElement.innerText;
+                if (emoji === "😃") {
+                    score--;
+                    emojiElement.innerText = "😠";
+                } else if (emoji === "😠") {
+                    score++;
+                    emojiElement.innerText = "😃";
+                } else if (emoji === "😈") {
+                    emojiElement.innerText = "😃";
+                }
+                scoreElement.textContent = score;
+                emojiGrid.removeChild(emojiElement);
+                if (emoji === "😈") {
+                    evilEmojis--;
+                }
+                if (evilEmojis >= 3) {
+                    endGame();
+                }
+            }
+
+            function startGame() {
+                score = 0;
+                evilEmojis = 0;
+                scoreElement.textContent = score;
+                emojiGrid.innerHTML = "";
+                gameInterval = setInterval(generateEmoji, 500);
+                startButton.style.display = "none";
+                stopButton.style.display = "inline-block";
+                restartButton.style.display = "none";
+            }
+
+            function stopGame() {
+                clearInterval(gameInterval);
+                emojiGrid.innerHTML = "<p>Game Stopped</p>";
+                stopButton.style.display = "none";
+                restartButton.style.display = "inline-block";
+            }
+
+            function endGame() {
+                clearInterval(gameInterval);
+                alert(`Game Over! Your final score is ${score}.`);
+                document.getElementById("share-score").style.display = "block";
+                restartGame();
+            }
+
+            function restartGame() {
+                clearInterval(gameInterval);
+                startButton.style.display = "inline-block";
+                stopButton.style.display = "none";
+                restartButton.style.display = "none";
+                emojiGrid.innerHTML = "";
+                scoreElement.textContent = "0";
+                evilEmojis = 0;
+            }
+
+            function toggleDarkMode() {
+                body.classList.toggle("dark-mode");
+            }
+
+            function shareScore() {
+                const shareData = {
+                    title: 'Emoji Pop Game',
+                    text: `I just scored ${score} in Emoji Pop! Can you beat my score?`,
+                    url: window.location.href,
+                };
+                navigator.share(shareData).catch(console.error);
+            }
+
+            startButton.addEventListener("click", startGame);
+            restartButton.addEventListener("click", restartGame);
+            stopButton.addEventListener("click", stopGame);
+            shareButton.addEvent
+            // Share button functionality
+            shareButton.addEventListener("click", shareScore);
+
+            // Modal functionality for How to Play
+            document.getElementById("how-to-play-button").onclick = function() {
+                howToPlayModal.style.display = "flex";
+            };
+
+            document.querySelector(".close").onclick = function() {
+                howToPlayModal.style.display = "none";
+            };
+
+            window.onclick = function(event) {
+                if (event.target == howToPlayModal) {
+                    howToPlayModal.style.display = "none";
+                }
+            };
+
+            // Dark Mode Toggle
+            darkModeButton.addEventListener("click", toggleDarkMode);
+        });
+    </script>
 </body>
 </html>
