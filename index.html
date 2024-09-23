@@ -223,9 +223,12 @@
                     emojiElement.innerText = emoji;
                     emojiElement.addEventListener("click", () => handleEmojiClick(emojiElement));
                     emojiGrid.appendChild(emojiElement);
-                    if (emoji === "😈") {
-                        evilEmojis++;
-                    }
+                   if (emoji === "😈") {
+    evilEmojis++;
+    if (evilEmojis >= 3) {
+        endGame();
+    }
+}
                 }
             }
 
