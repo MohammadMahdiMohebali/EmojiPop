@@ -196,6 +196,19 @@
         </div>
     </div>
 
+    <div id="end-game-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title">Game Over!</h2>
+            <p class="modal-text">Your final score is <strong id="final-score">0</strong>.</p>
+            <p class="modal-text">Can you beat your score next time?</p>
+            <div class="modal-buttons">
+                <button id="restart-button-modal">Restart Game</button>
+                <button id="share-button-modal">Share Your Score</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const emojiGrid = document.getElementById("emoji-grid");
@@ -223,12 +236,9 @@
                     emojiElement.innerText = emoji;
                     emojiElement.addEventListener("click", () => handleEmojiClick(emojiElement));
                     emojiGrid.appendChild(emojiElement);
-                   if (emoji === "😈") {
-    evilEmojis++;
-    if (evilEmojis >= 3) {
-        endGame();
-    }
-}
+                    if (emoji === "😈") {
+                        evilEmojis++;
+                    }
                 }
             }
 
@@ -273,9 +283,9 @@
 
             function endGame() {
                 clearInterval(gameInterval);
-                alert(`Game Over! Your final score is ${score}.`);
+                document.getElementById("final-score").textContent = score; // Set the final score
+                document.getElementById("end-game-modal").style.display = "flex"; // Show the end game modal
                 document.getElementById("share-score").style.display = "block";
-                restartGame();
             }
 
             function restartGame() {
@@ -313,15 +323,33 @@
                 howToPlayModal.style.display = "flex";
             };
 
-            document.querySelector(".close").onclick = function() {
-                howToPlayModal.style.display = "none";
-            };
+            // Close button functionality for both modals
+            document.querySelectorAll(".close").forEach(closeButton => {
+                closeButton.onclick = function() {
+                    document.getElementById("how-to-play-modal").style.display = "none"; // Close how to play modal
+                    document.getElementById("end-game-modal").style.display = "none"; // Close end game modal
+                };
+            });
 
-            window.onclick = function(event) {
-                if (event.target == howToPlayModal) {
-                    howToPlayModal.style.display = "none";
-                }
-            };
+            // End game function
+            function endGame() {
+                clearInterval(gameInterval);
+                document.getElementById("final-score").textContent = score; // Set the final score
+                document.getElementById("end-game-modal").style.display = "flex"; // Show the end game modal
+                document.getElementById("share-score").style.display = "block";
+            }
+
+            // Restart button functionality
+            document.getElementById("restart-button-modal").addEventListener("click", function() {
+                restartGame(); // Restart the game
+                document.getElementById("end-game-modal").style.display = "none"; // Close the modal
+            });
+
+            // Share button functionality
+            document.getElementById("share-button-modal").addEventListener("click", function() {
+                shareScore(); // Share the score
+                document.getElementById("end-game-modal").style.display = "none"; // Close the modal
+            });
 
             // Dark Mode Toggle
             darkModeButton.addEventListener("click", toggleDarkMode);
