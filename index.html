@@ -197,121 +197,105 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const emojiGrid = document.getElementById("emoji-grid");
-            const scoreElement = document.getElementById("score");
-            const startButton = document.getElementById("start-button");
-            const restartButton = document.getElementById("restart-button");
-            const stopButton = document.getElementById("stop-button");
-            const howToPlayModal = document.getElementById("how-to-play-modal");
-            const darkModeButton = document.getElementById("dark-mode-button");
-            const shareButton = document.getElementById("share-button");
-            const body = document.body;
+document.addEventListener("DOMContentLoaded", function () {
+    const emojiGrid = document.getElementById("emoji-grid");
+    const scoreElement = document.getElementById("score");
+    const startButton = document.getElementById("start-button");
+    const restartButton = document.getElementById("restart-button");
+    const stopButton = document.getElementById("stop-button");
+    const howToPlayModal = document.getElementById("how-to-play-modal");
+    const darkModeButton = document.getElementById("dark-mode-button");
+    const shareButton = document.getElementById("share-button");
+    const body = document.body;
 
-            let score = 0;
-            let evilEmojis = 0;
-            let gameInterval;
+    let score = 0;
+    let evilEmojis = 0;
+    let gameInterval;
+    let emojiSpeed = 400; // Decrease speed to make it harder
 
- function handleEmojiClick(emojiElement) {
-    const emoji = emojiElement.innerText;
-    emojiElement.style.pointerEvents = "none";  // Disable multiple clicks on the same emoji for a short time
-    setTimeout(() => {
-        emojiElement.style.pointerEvents = "auto";  // Re-enable after transition
-    }, 300);  // Adjust this delay to match your animations
+    function generateEmoji() {
+        const emojis = ["😃", "😃", "😃", "😠", "😠", "😠", "😠", "😈", "😈"]; // Increase number of evil emojis
+        const randomIndex = Math.floor(Math.random() * emojis.length);
+        const emoji = emojis[randomIndex];
 
-    if (emoji === "😃") {
-        score--;
-        emojiElement.innerText = "😠";
-    } else if (emoji === "😠") {
-        score++;
-        emojiElement.innerText = "😃";
-    } else if (emoji === "😈") {
-        emojiElement.innerText = "😃";
-    }
-    scoreElement.textContent = score;
-    emojiGrid.removeChild(emojiElement);
+        if (emojiGrid.childElementCount < 30) {
+            const emojiElement = document.createElement("div");
+            emojiElement.classList.add("emoji");
+            emojiElement.innerText = emoji;
+            emojiElement.addEventListener("click", () => handleEmojiClick(emojiElement));
+            emojiGrid.appendChild(emojiElement);
+            if (emoji === "😈") {
+                evilEmojis++;
+            }
+        }
 
-    if (emoji === "😈") {
-        evilEmojis--;
+        // Increase difficulty over time
+        emojiSpeed *= 0.99;  // Speed up the generation slightly over time
     }
 
-    if (evilEmojis >= 3) {
-        endGame();
+    function handleEmojiClick(emojiElement) {
+        const emoji = emojiElement.innerText;
+        if (emoji === "😃") {
+            score -= 2;  // Increase penalty for happy emoji
+            emojiElement.innerText = "😠";
+        } else if (emoji === "😠") {
+            score += 0.5;  // Reduce points gained from angry emoji
+            emojiElement.innerText = "😃";
+        } else if (emoji === "😈") {
+            emojiElement.innerText = "😃";
+        }
+        scoreElement.textContent = score;
+        emojiGrid.removeChild(emojiElement);
+        if (emoji === "😈") {
+            evilEmojis--;
+        }
+        if (evilEmojis >= 2) {  // Lower threshold for game over
+            endGame();
+        }
     }
-}
-            function startGame() {
-                score = 0;
-                evilEmojis = 0;
-                scoreElement.textContent = score;
-                emojiGrid.innerHTML = "";
-                gameInterval = setInterval(generateEmoji, 500);
-                startButton.style.display = "none";
-                stopButton.style.display = "inline-block";
-                restartButton.style.display = "none";
-            }
 
-            function stopGame() {
-                clearInterval(gameInterval);
-                emojiGrid.innerHTML = "<p>Game Stopped</p>";
-                stopButton.style.display = "none";
-                restartButton.style.display = "inline-block";
-            }
+    function startGame() {
+        score = 0;
+        evilEmojis = 0;
+        emojiSpeed = 400;  // Reset speed when restarting the game
+        scoreElement.textContent = score;
+        emojiGrid.innerHTML = "";
+        gameInterval = setInterval(generateEmoji, emojiSpeed);
+        startButton.style.display = "none";
+        stopButton.style.display = "inline-block";
+        restartButton.style.display = "none";
+    }
 
-            function endGame() {
-                clearInterval(gameInterval);
-                alert(`Game Over! Your final score is ${score}.`);
-                document.getElementById("share-score").style.display = "block";
-                restartGame();
-            }
+    function stopGame() {
+        clearInterval(gameInterval);
+        emojiGrid.innerHTML = "<p>Game Stopped</p>";
+        stopButton.style.display = "none";
+        restartButton.style.display = "inline-block";
+    }
 
-            function restartGame() {
-                clearInterval(gameInterval);
-                startButton.style.display = "inline-block";
-                stopButton.style.display = "none";
-                restartButton.style.display = "none";
-                emojiGrid.innerHTML = "";
-                scoreElement.textContent = "0";
-                evilEmojis = 0;
-            }
+    function endGame() {
+        clearInterval(gameInterval);
+        alert(`Game Over! Your final score is ${score}.`);
+        document.getElementById("share-score").style.display = "block";
+        restartGame();
+    }
 
-            function toggleDarkMode() {
-                body.classList.toggle("dark-mode");
-            }
+    function restartGame() {
+        clearInterval(gameInterval);
+        startButton.style.display = "inline-block";
+        stopButton.style.display = "none";
+        restartButton.style.display = "none";
+        emojiGrid.innerHTML = "";
+        scoreElement.textContent = "0";
+        evilEmojis = 0;
+    }
 
-            function shareScore() {
-                const shareData = {
-                    title: 'Emoji Pop Game',
-                    text: `I just scored ${score} in Emoji Pop! Can you beat my score?`,
-                    url: window.location.href,
-                };
-                navigator.share(shareData).catch(console.error);
-            }
+    startButton.addEventListener("click", startGame);
+    restartButton.addEventListener("click", restartGame);
+    stopButton.addEventListener("click", stopGame);
+});
 
-            startButton.addEventListener("click", startGame);
-            restartButton.addEventListener("click", restartGame);
-            stopButton.addEventListener("click", stopGame);
-            shareButton.addEvent
-            // Share button functionality
-            shareButton.addEventListener("click", shareScore);
 
-            // Modal functionality for How to Play
-            document.getElementById("how-to-play-button").onclick = function() {
-                howToPlayModal.style.display = "flex";
-            };
-
-            document.querySelector(".close").onclick = function() {
-                howToPlayModal.style.display = "none";
-            };
-
-            window.onclick = function(event) {
-                if (event.target == howToPlayModal) {
-                    howToPlayModal.style.display = "none";
-                }
-            };
-
-            // Dark Mode Toggle
-            darkModeButton.addEventListener("click", toggleDarkMode);
-        });
     </script>
 </body>
 </html>
