@@ -212,44 +212,33 @@
             let evilEmojis = 0;
             let gameInterval;
 
-            function generateEmoji() {
-                const emojis = ["😃", "😃", "😃", "😃", "😃", "😠", "😠", "😠", "😠", "😈"];
-                const randomIndex = Math.floor(Math.random() * emojis.length);
-                const emoji = emojis[randomIndex];
+ function handleEmojiClick(emojiElement) {
+    const emoji = emojiElement.innerText;
+    emojiElement.style.pointerEvents = "none";  // Disable multiple clicks on the same emoji for a short time
+    setTimeout(() => {
+        emojiElement.style.pointerEvents = "auto";  // Re-enable after transition
+    }, 300);  // Adjust this delay to match your animations
 
-                if (emojiGrid.childElementCount < 30) {
-                    const emojiElement = document.createElement("div");
-                    emojiElement.classList.add("emoji");
-                    emojiElement.innerText = emoji;
-                    emojiElement.addEventListener("click", () => handleEmojiClick(emojiElement));
-                    emojiGrid.appendChild(emojiElement);
-                    if (emoji === "😈") {
-                        evilEmojis++;
-                    }
-                }
-            }
+    if (emoji === "😃") {
+        score--;
+        emojiElement.innerText = "😠";
+    } else if (emoji === "😠") {
+        score++;
+        emojiElement.innerText = "😃";
+    } else if (emoji === "😈") {
+        emojiElement.innerText = "😃";
+    }
+    scoreElement.textContent = score;
+    emojiGrid.removeChild(emojiElement);
 
-            function handleEmojiClick(emojiElement) {
-                const emoji = emojiElement.innerText;
-                if (emoji === "😃") {
-                    score--;
-                    emojiElement.innerText = "😠";
-                } else if (emoji === "😠") {
-                    score++;
-                    emojiElement.innerText = "😃";
-                } else if (emoji === "😈") {
-                    emojiElement.innerText = "😃";
-                }
-                scoreElement.textContent = score;
-                emojiGrid.removeChild(emojiElement);
-                if (emoji === "😈") {
-                    evilEmojis--;
-                }
-                if (evilEmojis >= 3) {
-                    endGame();
-                }
-            }
+    if (emoji === "😈") {
+        evilEmojis--;
+    }
 
+    if (evilEmojis >= 3) {
+        endGame();
+    }
+}
             function startGame() {
                 score = 0;
                 evilEmojis = 0;
