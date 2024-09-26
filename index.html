@@ -162,8 +162,16 @@
             }
         }
     </style>
+    <link rel="icon" href="https://example.com/path/to/emoji.png" type="image/png">
 </head>
 <body>
+    <!-- Add audio elements for sound effects -->
+    <audio id="click-sound" src="https://cdn.pixabay.com/download/audio/2024/08/07/audio_88da442fc8.mp3"></audio>
+    <audio id="score-sound" src="https://cdn.pixabay.com/download/audio/2022/10/30/audio_f5dbe8213e.mp3"></audio>
+    <audio id="game-over-sound" src="https://cdn.pixabay.com/download/audio/2024/04/21/audio_1b8d3bcd3d.mp3"></audio>
+    <audio id="evil-sound" src="https://cdn.pixabay.com/download/audio/2022/03/25/audio_7a32f97753.mp3"></audio>
+    <audio id="background-music" loop src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_43ca1dd978.mp3"></audio>
+
     <div class="game-container">
         <h1 class="title">Emoji Pop Game</h1>
         <div class="button-container">
@@ -221,6 +229,13 @@
             const shareButton = document.getElementById("share-button");
             const body = document.body;
 
+            // Sound elements
+            const clickSound = document.getElementById("click-sound");
+            const scoreSound = document.getElementById("score-sound");
+            const gameOverSound = document.getElementById("game-over-sound");
+            const evilSound = document.getElementById("evil-sound");
+            const backgroundMusic = document.getElementById("background-music");
+
             let score = 0;
             let evilEmojis = 0;
             let gameInterval;
@@ -240,6 +255,18 @@
                         evilEmojis++;
                     }
                 }
+
+                // Increased logic to turn happy emojis into angry and evil emojis over time
+                if (Math.random() < 0.3) { // 30% chance to convert a happy emoji
+                    const happyEmojis = Array.from(emojiGrid.children).filter(e => e.innerText === "😃");
+                    if (happyEmojis.length > 0) {
+                        const randomHappy = happyEmojis[Math.floor(Math.random() * happyEmojis.length)];
+                        randomHappy.innerText = Math.random() < 0.5 ? "😠" : "😈"; // 50% chance to turn into angry or evil
+                        if (randomHappy.innerText === "😈") {
+                            evilEmojis++;
+                        }
+                    }
+                }
             }
 
             function handleEmojiClick(emojiElement) {
@@ -247,10 +274,13 @@
                 if (emoji === "😃") {
                     score--;
                     emojiElement.innerText = "😠";
+                    clickSound.play(); // Play click sound
                 } else if (emoji === "😠") {
                     score++;
                     emojiElement.innerText = "😃";
+                    scoreSound.play(); // Play score sound
                 } else if (emoji === "😈") {
+                    evilSound.play(); // Play evil sound
                     emojiElement.innerText = "😃";
                 }
                 scoreElement.textContent = score;
@@ -268,10 +298,11 @@
                 evilEmojis = 0;
                 scoreElement.textContent = score;
                 emojiGrid.innerHTML = "";
-                gameInterval = setInterval(generateEmoji, 500);
+                gameInterval = setInterval(generateEmoji, 300); // Reduced interval from 500ms to 300ms
                 startButton.style.display = "none";
                 stopButton.style.display = "inline-block";
                 restartButton.style.display = "none";
+                backgroundMusic.play(); // Play background music
             }
 
             function stopGame() {
@@ -283,6 +314,8 @@
 
             function endGame() {
                 clearInterval(gameInterval);
+                backgroundMusic.pause(); // Stop background music
+                gameOverSound.play(); // Play game over sound
                 document.getElementById("final-score").textContent = score; // Set the final score
                 document.getElementById("end-game-modal").style.display = "flex"; // Show the end game modal
                 document.getElementById("share-score").style.display = "block";
@@ -314,8 +347,6 @@
             startButton.addEventListener("click", startGame);
             restartButton.addEventListener("click", restartGame);
             stopButton.addEventListener("click", stopGame);
-            shareButton.addEvent
-            // Share button functionality
             shareButton.addEventListener("click", shareScore);
 
             // Modal functionality for How to Play
@@ -330,14 +361,6 @@
                     document.getElementById("end-game-modal").style.display = "none"; // Close end game modal
                 };
             });
-
-            // End game function
-            function endGame() {
-                clearInterval(gameInterval);
-                document.getElementById("final-score").textContent = score; // Set the final score
-                document.getElementById("end-game-modal").style.display = "flex"; // Show the end game modal
-                document.getElementById("share-score").style.display = "block";
-            }
 
             // Restart button functionality
             document.getElementById("restart-button-modal").addEventListener("click", function() {
